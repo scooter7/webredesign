@@ -10,7 +10,6 @@ st.title("Webpage Modifier")
 url = st.text_input("Enter the URL of the webpage:")
 fetch_button = st.button("Fetch Webpage")
 html_content = ""
-modified_html = ""
 
 if fetch_button and url:
     response = requests.get(url)
@@ -18,18 +17,18 @@ if fetch_button and url:
     st.text_area("Original HTML:", html_content, height=300)
 
 instructions = st.text_area("Enter your modification instructions:", height=100)
-
 modify_button = st.button("Modify Webpage")
 
 if modify_button and instructions and html_content:
-    # Creating a prompt for OpenAI
-    prompt = f"Here is a webpage HTML source code:\n{html_content}\n\nMake the following changes to the HTML source code based on these instructions:\n{instructions}\n\nModified HTML:"
+    # Structuring the prompt for OpenAI
+    prompt = f"Modify the following HTML source code based on these instructions:\n\nInstructions: {instructions}\n\nHTML Code:\n{html_content}"
 
     # Process instructions with OpenAI
     response = openai.completions.create(
         model="text-davinci-004", 
         prompt=prompt, 
-        max_tokens=500
+        max_tokens=1000,
+        temperature=0.7
     )
 
     modified_html = response.choices[0].text.strip()
