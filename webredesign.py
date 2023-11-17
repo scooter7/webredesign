@@ -1,6 +1,6 @@
 import streamlit as st
 import requests
-from bs4 import BeautifulSoup, Tag
+from bs4 import BeautifulSoup
 import openai
 import base64
 
@@ -35,8 +35,8 @@ if modification_request:
             style_tag.string = generated_code
             soup.head.append(style_tag)
         else:
-            new_html = BeautifulSoup(generated_code, 'html.parser')
-            soup.body.insert(0, new_html)
+            new_content = BeautifulSoup(generated_code, 'html.parser')
+            soup.body.insert(0, new_content)
 
         modified_html = soup.prettify()
         st.text_area("Modified Source Code", modified_html, height=300)
