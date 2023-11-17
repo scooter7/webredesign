@@ -1,6 +1,6 @@
 import streamlit as st
 import requests
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 import openai
 import base64
 
@@ -17,8 +17,8 @@ if url:
 if modification_request:
     openai.api_key = st.secrets["OPENAI_API_KEY"]
     detailed_prompt = (
-        "Generate complete and functional HTML/CSS code for the following modification "
-        f"without using external links or placeholders: '{modification_request}'."
+        "Generate complete and functional HTML/CSS code for the following modification: "
+        f"'{modification_request}'."
     )
     response = openai.completions.create(
         model="text-davinci-003",  # Replace with the correct GPT-4 model identifier
@@ -31,12 +31,12 @@ if modification_request:
 
     if soup:
         if "<style>" in generated_code or "css" in modification_request.lower():
-            new_style = soup.new_tag('style')
-            new_style.string = generated_code
-            soup.head.append(new_style)
+            style_tag = soup.new_tag("style")
+            style_tag.string = generated_code
+            soup.head.append(style_tag)
         else:
-            new_div = BeautifulSoup(generated_code, 'html.parser')
-            soup.body.insert(0, new_div)
+            new_html = BeautifulSoup(generated_code, 'html.parser')
+            soup.body.insert(0, new_html)
 
         modified_html = soup.prettify()
         st.text_area("Modified Source Code", modified_html, height=300)
