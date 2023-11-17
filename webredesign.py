@@ -28,7 +28,7 @@ if modification_request and soup:
         f"'{modification_request}'."
     )
     response = openai.completions.create(
-        model="text-davinci-004",  # Replace with the correct GPT-4 model identifier
+        model="text-davinci-003",  # Replace with the correct GPT-4 model identifier
         prompt=detailed_prompt,
         max_tokens=150
     )
