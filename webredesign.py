@@ -24,18 +24,20 @@ if modify_button and instructions and html_content:
     prompt = f"Modify the following HTML source code based on these instructions:\n\nInstructions: {instructions}\n\nHTML Code:\n{html_content}"
 
     # Process instructions with OpenAI
-    response = openai.completions.create(
-        model="text-davinci-004", 
-        prompt=prompt, 
-        max_tokens=1000,
-        temperature=0.7
-    )
+    try:
+        response = openai.completions.create(
+            model="text-davinci-004", 
+            prompt=prompt, 
+            max_tokens=1000,
+            temperature=0.7
+        )
+        modified_html = response.choices[0].text.strip()
 
-    modified_html = response.choices[0].text.strip()
-
-    # Display the modified HTML or an error message
-    if modified_html:
-        st.text_area("Modified HTML:", modified_html, height=300)
-        st.download_button("Download Modified HTML", modified_html, "modified.html")
-    else:
-        st.error("No modifications were made. Please refine your instructions.")
+        # Check if the response is valid and display it
+        if modified_html:
+            st.text_area("Modified HTML:", modified_html, height=300)
+            st.download_button("Download Modified HTML", modified_html, "modified.html")
+        else:
+            st.warning("The model did not return any modifications. Please refine your instructions.")
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
