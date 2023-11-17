@@ -9,15 +9,18 @@ st.title("Web Page Modifier")
 url = st.text_input("Enter the URL of the web page:")
 modification_request = st.text_area("Describe the modifications you want in natural language:")
 
-if url and modification_request:
+if url:
     response = requests.get(url)
     soup = BeautifulSoup(response.content, 'html.parser')
-    st.text_area("Original HTML", soup.prettify(), height=300)
+    full_html_content = soup.prettify()
+    st.text_area("Original HTML", full_html_content, height=300)
 
-    html_content = soup.prettify()[:2000]  # Adjust as needed to fit within token limits
+if url and modification_request:
+    # Limiting the HTML content to fit within the token limits of the OpenAI API
+    limited_html_content = full_html_content[:2000]  # Adjust as needed
 
     openai.api_key = st.secrets["OPENAI_API_KEY"]
-    prompt = f"Here is the HTML source code:\n{html_content}\n\nApply the following changes based on these instructions:\n{modification_request}"
+    prompt = f"Here is a portion of the HTML source code:\n{limited_html_content}\n\nApply the following changes based on these instructions:\n{modification_request}"
     response = openai.completions.create(
         model="text-davinci-003",  # Use the correct GPT model identifier
         prompt=prompt,
