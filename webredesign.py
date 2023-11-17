@@ -16,10 +16,14 @@ if url:
     st.text_area("Original HTML", full_html_content, height=300)
 
 if url and modification_request:
-    # Limiting the HTML content to fit within the token limits of the OpenAI API
-    limited_html_content = full_html_content[:2000]  # Adjust as needed
-
     openai.api_key = st.secrets["OPENAI_API_KEY"]
+    
+    # Since processing the entire HTML might exceed token limits,
+    # we prioritize sections most likely to be relevant for modification.
+    # For example, we could focus on the first 2000 characters of the HTML.
+    # You can adjust this based on your specific needs.
+    limited_html_content = full_html_content[:2000]
+
     prompt = f"Here is a portion of the HTML source code:\n{limited_html_content}\n\nApply the following changes based on these instructions:\n{modification_request}"
     response = openai.completions.create(
         model="text-davinci-003",  # Use the correct GPT model identifier
