@@ -1,36 +1,54 @@
 import streamlit as st
 import requests
+from bs4 import BeautifulSoup
 import openai
+import base64
 
-# Fetch the OpenAI API key from Streamlit secrets
-openai.api_key = st.secrets["OPENAI_API_KEY"]
+st.title("Web Page Modifier")
 
-# Streamlit UI
-st.title("Webpage Modifier")
-url = st.text_input("Enter the URL of the webpage:")
-fetch_button = st.button("Fetch Webpage")
-html_content = ""
+# Input for URL
+url = st.text_input("Enter the URL of the web page:")
+response = None
+soup = None
 
-if fetch_button and url:
+# Fetching and displaying the source code of the URL
+if url:
     response = requests.get(url)
-    html_content = response.text
-    st.text_area("Original HTML:", html_content, height=300)
+    soup = BeautifulSoup(response.content, 'html.parser')
+    st.text_area("Source Code", soup.prettify(), height=300)
 
-instructions = st.text_area("Enter your modification instructions:", height=100)
-modify_button = st.button("Modify Webpage")
+# Input for modification instructions
+modification_request = st.text_area("Describe the modifications you want:")
 
-if modify_button and instructions and html_content:
-    prompt = f"Given the HTML code:\n\n{html_content}\n\nApply these changes: {instructions}\n\nThe modified HTML should look like this:"
+# Processing the modification request
+if modification_request and soup:
+    openai.api_key = st.secrets["OPENAI_API_KEY"]
+    detailed_prompt = (
+        "Generate complete and functional HTML/CSS code for the following modification: "
+        f"'{modification_request}'."
+    )
     response = openai.completions.create(
-        model="text-davinci-004", 
-        prompt=prompt, 
-        max_tokens=1000
+        model="text-davinci-004",  # Replace with the correct GPT-4 model identifier
+        prompt=detailed_prompt,
+        max_tokens=150
     )
 
     generated_code = response.choices[0].text.strip()
+    st.text_area("Generated HTML/CSS", generated_code)
 
-    if generated_code and generated_code != html_content:
-        st.text_area("Generated HTML/CSS", generated_code, height=300)
-        st.download_button("Download Modified HTML", generated_code, "modified.html")
+    # Merging the generated code with the original HTML
+    if "<style>" in generated_code or "css" in modification_request.lower():
+        style_tag = soup.new_tag("style")
+        style_tag.string = generated_code
+        soup.head.append(style_tag)
     else:
-        st.warning("The model did not return any modifications. Please refine your instructions.")
+        new_content = BeautifulSoup(generated_code, 'html.parser')
+        soup.body.insert(0, new_content)
+
+    modified_html = soup.prettify()
+    st.text_area("Modified Source Code", modified_html, height=300)
+
+    # Providing a download link for the modified HTML
+    b64 = base64.b64encode(modified_html.encode()).decode()
+    href = f'<a href="data:file/html;base64,{b64}" download="modified_page.html">Download Modified HTML</a>'
+    st.markdown(href, unsafe_allow_html=True)
