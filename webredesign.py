@@ -17,9 +17,10 @@ if url:
 if modification_request:
     openai.api_key = st.secrets["OPENAI_API_KEY"]
     detailed_prompt = (
-        f"Create HTML and CSS code based on these requirements: '{modification_request}'. "
-        "For the CSS, use a modular coding approach with object-oriented class naming, and name the CSS file 'library.css'. "
-        "For the HTML, ensure it uses semantic elements correctly. Provide clean, efficient code adhering to best practices in web development."
+        f"Generate valid HTML and CSS code for: '{modification_request}'. "
+        "Ensure the HTML uses semantic elements and is structured correctly. "
+        "The CSS should follow a modular coding approach with object-oriented class naming, specifically using 'library.css'. "
+        "No additional comments or explanations are needed in the code. Provide clean, efficient, and valid HTML and CSS."
     )
     response = openai.completions.create(
         model="davinci",
