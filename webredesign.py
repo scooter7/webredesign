@@ -17,16 +17,15 @@ if url:
 if modification_request:
     openai.api_key = st.secrets["OPENAI_API_KEY"]
     detailed_prompt = (
-        "Generate HTML and CSS code to achieve the following specific modifications "
-        f"on a webpage: '{modification_request}'. The HTML should be structured with "
-        "appropriate tags (like div, span, p) and the CSS should include styles for layout, "
-        "color, and typography. Ensure the code is clean, well-organized, and follows best "
-        "practices for web development. Avoid using external links or placeholders."
+        f"I need precise and functional HTML and CSS code to implement the following specific modifications on a webpage: '{modification_request}'. "
+        "The HTML should use semantic elements and be structured appropriately with header, footer, main, section, and article tags as needed. "
+        "The CSS should be concise and include styles for layout (like flexbox or grid), colors, fonts, and responsive design. "
+        "The code should follow best practices for accessibility and SEO, and avoid unnecessary complexity or external dependencies."
     )
     response = openai.completions.create(
         model="davinci",
         prompt=detailed_prompt,
-        max_tokens=250
+        max_tokens=350
     )
 
     generated_code = response.choices[0].text.strip()
