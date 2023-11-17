@@ -20,21 +20,20 @@ instructions = st.text_area("Enter your modification instructions:", height=100)
 modify_button = st.button("Modify Webpage")
 
 if modify_button and instructions and html_content:
-    # Structuring the prompt for OpenAI
-    prompt = f"Modify the following HTML source code based on these instructions:\n\nInstructions: {instructions}\n\nHTML Code:\n{html_content}"
+    # Structuring the prompt for OpenAI in a more directive manner
+    prompt = f"Given the HTML code:\n\n{html_content}\n\nApply these changes: {instructions}\n\nThe modified HTML should look like this:"
 
     # Process instructions with OpenAI
     try:
         response = openai.completions.create(
             model="text-davinci-004", 
             prompt=prompt, 
-            max_tokens=1000,
-            temperature=0.7
+            max_tokens=1000
         )
         modified_html = response.choices[0].text.strip()
 
         # Check if the response is valid and display it
-        if modified_html:
+        if modified_html and modified_html != html_content:
             st.text_area("Modified HTML:", modified_html, height=300)
             st.download_button("Download Modified HTML", modified_html, "modified.html")
         else:
