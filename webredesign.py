@@ -21,7 +21,7 @@ if modification_request:
         f"without using external links or placeholders: '{modification_request}'."
     )
     response = openai.completions.create(
-        model="gpt-4",
+        model="davinci",
         prompt=detailed_prompt,
         max_tokens=150
     )
