@@ -17,7 +17,7 @@ if url:
     soup = BeautifulSoup(response.content, 'html.parser')
     st.text_area("Source Code", soup.prettify(), height=300)
 
-    if modification_request:
+if modification_request:
     # Use OpenAI API for natural language processing
     openai.api_key = st.secrets["OPENAI_API_KEY"]
     response = openai.chat.completions.create(
