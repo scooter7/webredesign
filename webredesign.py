@@ -25,7 +25,7 @@ if instructions and html_content:
     if modify_button:
         # Creating a prompt for OpenAI
         prompt = f"Here is a webpage HTML source code:\n{html_content}\n\nMake the following changes to the HTML source code based on these instructions:\n{instructions}\n\nModified HTML:"
-        
+
         # Process instructions with OpenAI
         response = openai.completions.create(
             model="text-davinci-004", 
@@ -35,5 +35,9 @@ if instructions and html_content:
 
         modified_html = response.choices[0].text.strip()
 
-        st.text_area("Modified HTML:", modified_html, height=300)
-        st.download_button("Download Modified HTML", modified_html, "modified.html")
+        # Check if the model provided a modification
+        if modified_html:
+            st.text_area("Modified HTML:", modified_html, height=300)
+            st.download_button("Download Modified HTML", modified_html, "modified.html")
+        else:
+            st.error("No modifications were made. Please refine your instructions.")
