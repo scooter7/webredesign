@@ -20,7 +20,7 @@ if url:
 if modification_request:
     # Use OpenAI API for natural language processing
     openai.api_key = st.secrets["OPENAI_API_KEY"]
-    response = openai.chat.completions.create(
+    response = openai.Completion.create(
         model="text-davinci-003",
         prompt=f"Translate this into HTML/CSS: {modification_request}",
         max_tokens=150
