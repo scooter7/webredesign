@@ -20,7 +20,7 @@ if modification_request:
         "Generate complete and functional HTML/CSS code for the following modification "
         f"without using external links or placeholders: '{modification_request}'."
     )
-    response = openai.Completion.create(
+    response = openai.completions.create(
         model="text-davinci-003",  # Replace with the correct GPT-4 model identifier
         prompt=detailed_prompt,
         max_tokens=150
