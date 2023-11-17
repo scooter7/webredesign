@@ -22,11 +22,11 @@ if modification_request:
     )
     response = openai.completions.create(
         model="gpt-4",
-        messages=[{"role": "system", "content": "Your system message here"},
-                  {"role": "user", "content": detailed_prompt}]
+        prompt=detailed_prompt,
+        max_tokens=150
     )
 
-    generated_code = response.choices[0].message['content'].strip()
+    generated_code = response.choices[0].text.strip()
     st.text_area("Generated HTML/CSS", generated_code)
 
     if soup:
