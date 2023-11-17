@@ -15,10 +15,16 @@ if url:
     st.text_area("Source Code", soup.prettify(), height=300)
 
 if modification_request:
+    detailed_prompt = (
+        "Translate the following web design modification request into HTML and CSS code.\n"
+        f"Request: '{modification_request}'\n"
+        "Provide the complete HTML and CSS code necessary to implement this modification."
+    )
+
     openai.api_key = st.secrets["OPENAI_API_KEY"]
     response = openai.completions.create(
         model="text-davinci-003",
-        prompt=f"Translate this into HTML/CSS: {modification_request}",
+        prompt=detailed_prompt,
         max_tokens=150
     )
 
