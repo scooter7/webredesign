@@ -18,15 +18,15 @@ if url:
     st.text_area("Source Code", soup.prettify(), height=300)
 
     if modification_request:
-        # Use OpenAI API for natural language processing
-        openai.api_key = st.secrets["OPENAI_API_KEY"]
-        response = openai.chat.completions.create(
-            engine="davinci-codex",
-            prompt=f"Translate this into HTML/CSS: {modification_request}",
-            max_tokens=150
-        )
-        generated_code = response.choices[0].text.strip()
-        st.text_area("Generated Code", generated_code)
+    # Use OpenAI API for natural language processing
+    openai.api_key = st.secrets["OPENAI_API_KEY"]
+    response = openai.chat.completions.create(
+        model="text-davinci-003",  # Updated model name
+        prompt=f"Translate this into HTML/CSS: {modification_request}",
+        max_tokens=150
+    )
+    generated_code = response.choices[0].text.strip()
+    st.text_area("Generated Code", generated_code)
 
         # Apply and display modifications (simplified example)
         new_style = soup.new_tag('style')
