@@ -1,46 +1,39 @@
 import streamlit as st
 import requests
-from bs4 import BeautifulSoup
 import openai
-import base64
 
-st.title("Web Page Modifier")
+# Fetch the OpenAI API key from Streamlit secrets
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
-url = st.text_input("Enter the URL of the web page:")
-modification_request = st.text_area("Describe the modifications you want:")
+# Streamlit UI
+st.title("Webpage Modifier")
+url = st.text_input("Enter the URL of the webpage:")
+fetch_button = st.button("Fetch Webpage")
+html_content = ""
+modified_html = ""
 
-if url:
+if fetch_button and url:
     response = requests.get(url)
-    soup = BeautifulSoup(response.content, 'html.parser')
-    st.text_area("Source Code", soup.prettify(), height=300)
+    html_content = response.text
+    st.text_area("Original HTML:", html_content, height=300)
 
-if modification_request:
-    openai.api_key = st.secrets["OPENAI_API_KEY"]
-    detailed_prompt = (
-        "Generate complete and functional HTML/CSS code for the following modification: "
-        f"'{modification_request}'."
-    )
-    response = openai.completions.create(
-        model="text-davinci-003",  # Replace with the correct GPT-4 model identifier
-        prompt=detailed_prompt,
-        max_tokens=150
-    )
+instructions = st.text_area("Enter your modification instructions:", height=100)
 
-    generated_code = response.choices[0].text.strip()
-    st.text_area("Generated HTML/CSS", generated_code)
+if instructions and html_content:
+    modify_button = st.button("Modify Webpage")
 
-    if soup:
-        if "<style>" in generated_code or "css" in modification_request.lower():
-            style_tag = soup.new_tag("style")
-            style_tag.string = generated_code
-            soup.head.append(style_tag)
-        else:
-            new_content = BeautifulSoup(generated_code, 'html.parser')
-            soup.body.insert(0, new_content)
+    if modify_button:
+        # Creating a prompt for OpenAI
+        prompt = f"Here is a webpage HTML source code:\n{html_content}\n\nMake the following changes to the HTML source code based on these instructions:\n{instructions}\n\nModified HTML:"
+        
+        # Process instructions with OpenAI
+        response = openai.completions.create(
+            model="text-davinci-004", 
+            prompt=prompt, 
+            max_tokens=500
+        )
 
-        modified_html = soup.prettify()
-        st.text_area("Modified Source Code", modified_html, height=300)
+        modified_html = response.choices[0].text.strip()
 
-        b64 = base64.b64encode(modified_html.encode()).decode()
-        href = f'<a href="data:file/html;base64,{b64}" download="modified_page.html">Download Modified HTML</a>'
-        st.markdown(href, unsafe_allow_html=True)
+        st.text_area("Modified HTML:", modified_html, height=300)
+        st.download_button("Download Modified HTML", modified_html, "modified.html")
