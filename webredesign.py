@@ -22,7 +22,7 @@ if modification_request:
     st.session_state.messages.append(user_message)
 
     openai.api_key = st.secrets["OPENAI_API_KEY"]
-    response = openai.chat.completions.create(
+    response = openai.Completion.create(
         model="text-davinci-003",
         messages=st.session_state.messages
     )
